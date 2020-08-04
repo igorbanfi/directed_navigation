@@ -1,0 +1,7 @@
+<library path="lib/libdirected_planner">
+  <class name="directed_planner/DirectedPlanner" type="directed_planner::DirectedPlanner" base_class_type="nav_core::BaseGlobalPlanner">
+    <description>
+      A planner that determines path based on directinoed costmap
+    </description>
+  </class>
+</library>

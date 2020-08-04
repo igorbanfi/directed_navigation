@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="2">
+    <name>directed_planner</name>
+    <version>1.0.0</version>
+    <description>
+
+      A planner that determines path based on directinoed costmap
+
+    </description>
+    <author>Igor Banfi</author>
+    <maintainer email="banfi.igor@windowslive.com">Igor Banfi</maintainer>
+    <license>BSD</license>
+
+    <buildtool_depend>catkin</buildtool_depend>
+
+    <build_depend>tf2_geometry_msgs</build_depend>
+
+    <depend>base_local_planner</depend>
+    <depend>dynamic_reconfigure</depend>
+    <depend>costmap_2d</depend>
+    <depend>eigen</depend>
+    <depend>nav_core</depend>
+    <depend>pluginlib</depend>
+    <depend>roscpp</depend>
+    <depend>tf2</depend>
+    <depend>tf2_ros</depend>
+    <depend>directed_msgs</depend>
+    <depend>directed_layer</depend>
+    <build_depend>message_generation</build_depend>
+    <exec_depend>message_runtime</exec_depend>
+
+    <export>
+        <nav_core plugin="${prefix}/bgp_plugin.xml" />
+    </export>
+</package>

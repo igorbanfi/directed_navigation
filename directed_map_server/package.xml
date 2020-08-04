@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="2">
+    <name>directed_map_server</name>
+    <version>1.0.0</version>
+    <description>
+      provides directed_map_server
+    </description>
+    
+    <maintainer email="banfi.igor@windowslive.com">Igor Banfi</maintainer>
+    <license>BSD</license>
+    <author email="banfi.igor@windowslive.com">Igor Banfi</author>
+
+    <buildtool_depend version_gte="0.5.68">catkin</buildtool_depend>
+
+    <depend>bullet</depend>
+    <depend>nav_msgs</depend>
+    <depend>directed_msgs</depend>
+    <depend>roscpp</depend>
+    <depend>sdl</depend>
+    <depend>sdl-image</depend>
+    <depend>tf2</depend>
+    <depend>yaml-cpp</depend>
+</package>

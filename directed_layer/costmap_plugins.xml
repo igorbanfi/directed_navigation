@@ -1,0 +1,5 @@
+<library path="lib/libdirected_layer">
+  <class type="directed_layer::DirectedLayer" base_class_type="costmap_2d::Layer">
+    <description>Directed layer</description>
+  </class>
+</library>

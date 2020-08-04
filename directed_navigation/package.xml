@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>directed_navigation</name>
+  <version>1.0.0</version>
+  <description>The directed_navigation meta-package direction spoecific global path planner</description>
+
+  <maintainer email="banfi.igor@windowslive.com">Igor Banfi</maintainer>
+  <license>BSD</license>
+  <author email="banfi.igor@windowslive.com">Igor Banfi</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <exec_depend>directed_layer</exec_depend>
+  <exec_depend>directed_map_server</exec_depend>
+  <exec_depend>directed_msgs</exec_depend>
+  <exec_depend>directed_planner</exec_depend>
+
+  <export>
+    <metapackage/>
+  </export>
+</package>

@@ -1,0 +1,5 @@
+# Get the directed map as a directed_planner/DirectedMap
+---
+directed_msgs/DirectedMap map
+---
+# no feedback

@@ -1,0 +1,10 @@
+std_msgs/Header header
+int32 x
+int32 y
+uint32 width
+uint32 height
+int8[] data
+int8[] dataXu
+int8[] dataXd
+int8[] dataYu
+int8[] dataYd
