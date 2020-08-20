@@ -1,0 +1,7 @@
+<library path="lib/libdwa_directed_local_planner">
+  <class name="dwa_directed_local_planner/DWADirectedLocalPlanner" type="dwa_directed_local_planner::DWADirectedLocalPlanner" base_class_type="nav_core::BaseLocalPlanner">
+    <description>
+      DWA directed local planner that takes directed map into consideration.
+    </description>
+  </class>
+</library>

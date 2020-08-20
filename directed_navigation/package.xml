@@ -14,6 +14,8 @@
   <exec_depend>directed_map_server</exec_depend>
   <exec_depend>directed_msgs</exec_depend>
   <exec_depend>directed_planner</exec_depend>
+  <exec_depend>directed_local_planner</exec_depend>
+  <exec_depend>dwa_directed_local_planner</exec_depend>
 
   <export>
     <metapackage/>
