@@ -1,0 +1,7 @@
+<library path="lib/libtrajectory_directed_local_planner">
+  <class name="trajectory_directed_local_planner/TrajectoryDirectedLocalPlanner" type="trajectory_directed_local_planner::TrajectoryDirectedLocalPlanner" base_class_type="nav_core::BaseLocalPlanner">
+    <description>
+  Local planner that takes directed map into consideration.asd
+    </description>
+  </class>
+</library>

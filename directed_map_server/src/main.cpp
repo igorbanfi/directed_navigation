@@ -60,7 +60,6 @@ class DirectedMapServer
     /** Trivial constructor */
     DirectedMapServer(const std::string& fname, double res)
     {
-      std::string mapfname = "";
       std::string mapfnamexu = "";
       std::string mapfnamexd = "";
       std::string mapfnameyu = "";
@@ -138,27 +137,6 @@ class DirectedMapServer
           doc["origin"][2] >> origin[2];
         } catch (YAML::InvalidScalar &) {
           ROS_ERROR("The map does not contain an origin tag or it is invalid.");
-          exit(-1);
-        }
-        try {
-          doc["image"] >> mapfname;
-          // TODO: make this path-handling more robust
-          if(mapfname.size() == 0)
-          {
-            ROS_ERROR("The image tag cannot be an empty string.");
-            exit(-1);
-          }
-
-          boost::filesystem::path mapfpath(mapfname);
-          if (!mapfpath.is_absolute())
-          {
-            boost::filesystem::path dir(fname);
-            dir = dir.parent_path();
-            mapfpath = dir / mapfpath;
-            mapfname = mapfpath.string();
-          }
-        } catch (YAML::InvalidScalar &) {
-          ROS_ERROR("The map does not contain an image tag or it is invalid.");
           exit(-1);
         }
         try {
@@ -249,7 +227,6 @@ class DirectedMapServer
         private_nh.param("negate", negate, 0);
         private_nh.param("occupied_thresh", occ_th, 0.65);
         private_nh.param("free_thresh", free_th, 0.196);
-        mapfname = fname;
         mapfnamexu = fname;
         mapfnamexd = fname;
         mapfnameyu = fname;
@@ -257,7 +234,6 @@ class DirectedMapServer
         origin[0] = origin[1] = origin[2] = 0.0;
       }
 
-      ROS_INFO("Loading map from image \"%s\"", mapfname.c_str());
       ROS_INFO("Loading map xu from image \"%s\"", mapfnamexu.c_str());
       ROS_INFO("Loading map xd from image \"%s\"", mapfnamexd.c_str());
       ROS_INFO("Loading map yu from image \"%s\"", mapfnameyu.c_str());
@@ -265,7 +241,7 @@ class DirectedMapServer
 
       try
       {
-          directed_map_server::loadMapFromFile(&map_resp_,mapfname.c_str(),
+          directed_map_server::loadMapFromFile(&map_resp_,
                                       mapfnamexu.c_str(), mapfnamexd.c_str(),
                                       mapfnameyu.c_str(), mapfnameyd.c_str(),
                                       res,negate,occ_th,free_th, origin, mode);

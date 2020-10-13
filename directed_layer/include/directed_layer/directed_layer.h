@@ -47,56 +47,124 @@ namespace directed_layer
 
 /*
  * @class DirectedLayer
- * @brief A costmap layer that includes additional data regarding directional cost
+ * @brief A costmap layer that provides data regarding directional cost
  */
 
 class DirectedLayer : public costmap_2d::CostmapLayer
 {
 public:
+  /**
+   * Default constructor
+   */
   DirectedLayer();
+
+  /**
+   * deconstructor
+   */
   virtual ~DirectedLayer();
+
+  /**
+   * gets called at initalization of costmap.
+   * defines reconfig callback functions, gets parameters from param server.
+   */
   virtual void onInitialize();
+
+  /**
+   * Activates directed layer.
+   */
   virtual void activate();
+
+  /**
+   * Deactivates directed layer
+   */
   virtual void deactivate();
+
+  /**
+   * Resets directed layer
+   */
   virtual void reset();
 
+  /**
+   * Gets called by layered costmap..
+   */
   virtual void updateBounds(double robot_x, double robot_y, double robot_yaw, double* min_x, double* min_y,
                             double* max_x, double* max_y);
+
+  /**
+   * Updates values of costmap.
+   */
   virtual void updateCosts(costmap_2d::Costmap2D& master_grid, int min_i, int min_j, int max_i, int max_j);
 
+  /**
+   * Matches layer size with costmap.
+   */
   virtual void matchSize();
 
+  /**
+   * Allocates memory for master map and for 4 directed maps.
+   */
   virtual void initMaps(unsigned int size_x, unsigned int size_y);
+
+  /**
+   * Resets values of maps.
+   */
   virtual void resetMap(unsigned int x0, unsigned int y0, unsigned int xn, unsigned int yn);
 
   /**
-   * @brief Recieve pointer to directed map xu
+   * @brief Returns pointer to directed map xu
    */
   virtual unsigned char* getDirectedMapXu();
 
   /**
-   * @brief Recieve pointer to directed map xd
+   * @brief Returns pointer to directed map xd
    */
   virtual unsigned char* getDirectedMapXd();
 
   /**
-   * @brief Recieve pointer to directed map yu
+   * @brief Returns pointer to directed map yu
    */
   virtual unsigned char* getDirectedMapYu();
 
   /**
-   * @brief Recieve pointer to directed map yd
+   * @brief Returns pointer to directed map yd
    */
   virtual unsigned char* getDirectedMapYd();
 
+  /**
+   * Returns resolution of directed maps.
+   */
+  virtual double getDirectedMapResolution();
+
+  /**
+   * Given 2 directed map coordinates, computes associated directed map index.
+   */
+  virtual unsigned int getDirectedMapIndex(unsigned int mx, unsigned int my);
+
+  /**
+   * Convert from directed map cooridinates to world coordinates.
+   */
+  virtual void directedMapToWorld(unsigned int mx, unsigned int my, double &wx, double &wy);
+
+  /**
+   * Converts world coordinates to directed map coordinates.
+   */
+  virtual bool worldToDirectedMap(double wx, double wy, unsigned int& mx, unsigned int& my);
 
 private:
+  /**
+   * Callback to update directed map.
+   */
   void incomingMap(const directed_msgs::DirectedMapConstPtr& new_map);
   void incomingUpdate(const directed_msgs::DirectedMapUpdateConstPtr& update);
+
+  /**
+   * Callback function for dynamic reconfigure.
+   */
   void reconfigureCB(costmap_2d::GenericPluginConfig &config, uint32_t level);
 
   unsigned char interpretValue(unsigned char value);
 
+  // Parameters
   std::string global_frame_;
   std::string map_frame_;
   bool subscribe_to_updates_;
@@ -107,19 +175,25 @@ private:
   bool use_maximum_;
   bool first_map_only_;
   bool trinary_costmap_;
-  ros::Subscriber map_sub_, map_update_sub_;
-
+  double directed_map_resolution_;
+  unsigned int directed_map_size_x_;
+  unsigned int directed_map_size_y_;
   unsigned char lethal_threshold_, unknown_cost_value_;
 
+  // subscribers for directed_msgs
+  ros::Subscriber map_sub_, map_update_sub_;
+
+  // dynamic reconfigure server
   dynamic_reconfigure::Server<costmap_2d::GenericPluginConfig> *dsrv_;
 
 protected:
+  // Pointers of individual directed maps
   unsigned char* directedMapXu;
   unsigned char* directedMapXd;
   unsigned char* directedMapYu;
   unsigned char* directedMapYd;
 };
 
-}  // namespace costmap_2d
+}  // namespace directed_layer
 
 #endif  // DIRECTED_LAYER_DIRECTED_LAYER_H_

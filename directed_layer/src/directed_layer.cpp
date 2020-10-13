@@ -178,6 +178,9 @@ void DirectedLayer::incomingMap(const directed_msgs::DirectedMapConstPtr& new_ma
 {
   unsigned int size_x = new_map->info.width, size_y = new_map->info.height;
 
+  directed_map_size_x_ = size_x;
+  directed_map_size_y_ = size_y;
+  directed_map_resolution_ = new_map->info.resolution;
   ROS_DEBUG("Received a %d X %d directed map at %f m/pix", size_x, size_y, new_map->info.resolution);
 
   // resize costmap if size, resolution or origin do not match
@@ -213,13 +216,12 @@ void DirectedLayer::incomingMap(const directed_msgs::DirectedMapConstPtr& new_ma
     for (unsigned int j = 0; j < size_x; ++j)
     {
 
-      unsigned char value = new_map->data[index];
+      //unsigned char value = new_map->data[index];
       unsigned char valuexu = new_map->dataXu[index];
       unsigned char valuexd = new_map->dataXd[index];
       unsigned char valueyu = new_map->dataYu[index];
       unsigned char valueyd = new_map->dataYd[index];
 
-      costmap_[index] = interpretValue(value);
       directedMapXu[index] = interpretValue(valuexu);
       directedMapXd[index] = interpretValue(valuexd);
       directedMapYu[index] = interpretValue(valueyu);
@@ -256,7 +258,6 @@ void DirectedLayer::incomingUpdate(const directed_msgs::DirectedMapUpdateConstPt
     {
       unsigned int index = index_base + x + update->x;
 
-      costmap_[index] = interpretValue(update->data[di]);
       directedMapXu[index] = interpretValue(update->dataXu[di]);
       directedMapXd[index] = interpretValue(update->dataXd[di]);
       directedMapYu[index] = interpretValue(update->dataYu[di]);
@@ -299,7 +300,6 @@ void DirectedLayer::reset()
 void DirectedLayer::updateBounds(double robot_x, double robot_y, double robot_yaw, double* min_x, double* min_y,
                                double* max_x, double* max_y)
 {
-
   if( !layered_costmap_->isRolling() ){
     if (!map_received_ || !(has_updated_data_ || has_extra_bounds_))
       return;
@@ -322,6 +322,7 @@ void DirectedLayer::updateBounds(double robot_x, double robot_y, double robot_ya
 
 void DirectedLayer::updateCosts(costmap_2d::Costmap2D& master_grid, int min_i, int min_j, int max_i, int max_j)
 {
+
   if (!map_received_)
     return;
 
@@ -331,17 +332,16 @@ void DirectedLayer::updateCosts(costmap_2d::Costmap2D& master_grid, int min_i, i
   if (!layered_costmap_->isRolling())
   {
     // if not rolling, the layered costmap (master_grid) has same coordinates as this layer
-    if (!use_maximum_)
-      updateWithTrueOverwrite(master_grid, min_i, min_j, max_i, max_j);
-    else
-      updateWithMax(master_grid, min_i, min_j, max_i, max_j);
+    //if (!use_maximum_)
+    //  updateWithTrueOverwrite(master_grid, min_i, min_j, max_i, max_j);
+    //else
+    //  updateWithMax(master_grid, min_i, min_j, max_i, max_j);
   }
   else
   {
     // If rolling window, the master_grid is unlikely to have same coordinates as this layer
     unsigned int mx, my;
     double wx, wy;
-    // Might even be in a different frame
     geometry_msgs::TransformStamped transform;
     try
     {
@@ -352,7 +352,6 @@ void DirectedLayer::updateCosts(costmap_2d::Costmap2D& master_grid, int min_i, i
       ROS_ERROR("%s", ex.what());
       return;
     }
-    // Copy map data given proper transformations
     tf2::Transform tf2_transform;
     tf2::convert(transform.transform, tf2_transform);
     for (unsigned int i = min_i; i < max_i; ++i)
@@ -367,10 +366,10 @@ void DirectedLayer::updateCosts(costmap_2d::Costmap2D& master_grid, int min_i, i
         // Set master_grid with cell from map
         if (worldToMap(p.x(), p.y(), mx, my))
         {
-          if (!use_maximum_)
-            master_grid.setCost(i, j, getCost(mx, my));
-          else
-            master_grid.setCost(i, j, std::max(getCost(mx, my), master_grid.getCost(i, j)));
+          //if (!use_maximum_)
+          //  master_grid.setCost(i, j, getCost(mx, my));
+          //else
+          //  master_grid.setCost(i, j, std::max(getCost(mx, my), master_grid.getCost(i, j)));
         }
       }
     }
@@ -391,4 +390,31 @@ unsigned char* DirectedLayer::getDirectedMapYd(){
   return directedMapYd;
 };
 
-}  // namespace costmap_2d
+double DirectedLayer::getDirectedMapResolution(){
+  return resolution_;
+}
+
+unsigned int DirectedLayer::getDirectedMapIndex(unsigned int mx, unsigned int my){
+  return my * size_x_ + mx;
+}
+
+void DirectedLayer::directedMapToWorld(unsigned int mx, unsigned int my, double &wx, double &wy){
+  wx = Costmap2D::origin_x_ + (mx + 0.5) * directed_map_resolution_;
+  wy = Costmap2D::origin_y_ + (my + 0.5) * directed_map_resolution_;
+}
+
+bool DirectedLayer::worldToDirectedMap(double wx, double wy, unsigned int& mx, unsigned int& my){
+  if (wx < Costmap2D::origin_x_ || wy < Costmap2D::origin_y_)
+     return false;
+
+     mx = (int)((wx - Costmap2D::origin_x_) / resolution_);
+   my = (int)((wy - Costmap2D::origin_y_) / resolution_);
+
+   if (mx < size_x_ && my < size_y_)
+     return true;
+   return false;
+}
+
+
+
+}  // namespace directed_layer

@@ -56,7 +56,6 @@ namespace directed_map_server
  * use when our services are requested.
  *
  * @param resp The map wil be written into here
- * @param fname The image file to read from
  * @param fnamexu The image file to read from, direction x up
  * @param fnamexd The image file to read from, direction x down
  * @param fnameyu The image file to read from, direction y up
@@ -71,7 +70,7 @@ namespace directed_map_server
  * @throws std::runtime_error If the image file can't be loaded
  * */
 void loadMapFromFile(directed_msgs::GetDirectedMap::Response* resp,
-                     const char* fname, const char* fnamexu, const char* fnamexd,
+                     const char* fnamexu, const char* fnamexd,
                      const char* fnameyu, const char* fnameyd, double res,
                      bool negate, double occ_th, double free_th, double* origin,
                      MapMode mode=TRINARY);

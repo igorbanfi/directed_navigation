@@ -4,9 +4,9 @@
     <name>directed_map_server</name>
     <version>1.0.0</version>
     <description>
-      provides directed_map_server
+        directed_map_server provides the <tt>directed_map_server</tt> ROS <a href="http://www.ros.org/wiki/Nodes">Node</a>, which offers directed map data as a ROS <a href="http://www.ros.org/wiki/Services">Service</a>.
     </description>
-    
+
     <maintainer email="banfi.igor@windowslive.com">Igor Banfi</maintainer>
     <license>BSD</license>
     <author email="banfi.igor@windowslive.com">Igor Banfi</author>
@@ -21,4 +21,5 @@
     <depend>sdl-image</depend>
     <depend>tf2</depend>
     <depend>yaml-cpp</depend>
+
 </package>

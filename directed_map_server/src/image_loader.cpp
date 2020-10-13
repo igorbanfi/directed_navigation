@@ -48,13 +48,11 @@ namespace directed_map_server
 {
 
 void
-loadMapFromFile(directed_msgs::GetDirectedMap::Response* resp,
-                const char* fname, const char* fnamexu, const char* fnamexd,
+loadMapFromFile(directed_msgs::GetDirectedMap::Response* resp, const char* fnamexu, const char* fnamexd,
                 const char* fnameyu, const char* fnameyd, double res, bool negate,
                 double occ_th, double free_th, double* origin,
                 MapMode mode)
 {
-  SDL_Surface* img;
   SDL_Surface* imgxu;
   SDL_Surface* imgxd;
   SDL_Surface* imgyu;
@@ -73,12 +71,6 @@ loadMapFromFile(directed_msgs::GetDirectedMap::Response* resp,
   double color_avg;
 
   // Load the image using SDL.  If we get NULL back, the image load failed.
-  if(!(img = IMG_Load(fname)))
-  {
-    std::string errmsg = std::string("failed to open image file \"") +
-            std::string(fname) + std::string("\": ") + IMG_GetError();
-    throw std::runtime_error(errmsg);
-  }
 
   if(!(imgxu = IMG_Load(fnamexu)))
   {
@@ -109,14 +101,13 @@ loadMapFromFile(directed_msgs::GetDirectedMap::Response* resp,
   }
 
   // Copy the image data into the map structure
-  resp->map.info.width = img->w;
-  resp->map.info.height = img->h;
+  resp->map.info.width = imgxu->w;
+  resp->map.info.height = imgxu->h;
   resp->map.info.resolution = res;
   resp->map.info.origin.position.x = *(origin);
   resp->map.info.origin.position.y = *(origin+1);
   resp->map.info.origin.position.z = 0.0;
   btQuaternion q;
-  // setEulerZYX(yaw, pitch, roll)
   q.setEulerZYX(*(origin+2), 0, 0);
   resp->map.info.origin.orientation.x = q.x();
   resp->map.info.origin.orientation.y = q.y();
@@ -124,7 +115,6 @@ loadMapFromFile(directed_msgs::GetDirectedMap::Response* resp,
   resp->map.info.origin.orientation.w = q.w();
 
   // Allocate space to hold the data
-  resp->map.data.resize(resp->map.info.width * resp->map.info.height);
   resp->map.dataXu.resize(resp->map.info.width * resp->map.info.height);
   resp->map.dataXd.resize(resp->map.info.width * resp->map.info.height);
   resp->map.dataYu.resize(resp->map.info.width * resp->map.info.height);
@@ -133,22 +123,20 @@ loadMapFromFile(directed_msgs::GetDirectedMap::Response* resp,
   data_ = (unsigned char*) malloc (resp->map.info.width * resp->map.info.height+1);
 
   // Get values that we'll need to iterate through the pixels
-  rowstride = img->pitch;
-  n_channels = img->format->BytesPerPixel;
+  rowstride = imgxu->pitch;
+  n_channels = imgxu->format->BytesPerPixel;
 
   // NOTE: Trinary mode still overrides here to preserve existing behavior.
   // Alpha will be averaged in with color channels when using trinary mode.
-  if (mode==TRINARY || !img->format->Amask)
+  if (mode==TRINARY || !imgxu->format->Amask)
     avg_channels = n_channels;
   else
     avg_channels = n_channels - 1;
 
-  for (direction = 0; direction < 5; direction++)
+  for (direction = 1; direction < 5; direction++)
   {
   // Copy pixel data into the map structure
-  if (direction==0)
-    pixels = (unsigned char*)(img->pixels);
-  else if (direction==1)
+  if (direction==1)
     pixels = (unsigned char*)(imgxu->pixels);
   else if (direction==2)
     pixels = (unsigned char*)(imgxd->pixels);
@@ -204,9 +192,9 @@ loadMapFromFile(directed_msgs::GetDirectedMap::Response* resp,
       }
     }
 
-    if (direction==0)
-      memcpy(&resp->map.data[0], data_, resp->map.info.width * resp->map.info.height);
-    else if (direction==1)
+    //if (direction==0)
+    //  memcpy(&resp->map.data[0], data_, resp->map.info.width * resp->map.info.height);
+    if (direction==1)
       memcpy(&resp->map.dataXu[0], data_, resp->map.info.width * resp->map.info.height);
     else if (direction==2)
       memcpy(&resp->map.dataXd[0], data_, resp->map.info.width * resp->map.info.height);
@@ -217,7 +205,6 @@ loadMapFromFile(directed_msgs::GetDirectedMap::Response* resp,
 
   }
 
-  SDL_FreeSurface(img);
   SDL_FreeSurface(imgxu);
   SDL_FreeSurface(imgxd);
   SDL_FreeSurface(imgyu);
