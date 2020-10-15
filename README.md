@@ -22,7 +22,12 @@ Global planner.
 
 ### [trajectory_directed_local_planner](trajectory_directed_local_planner/README.md)
 
-Local planner.
+Local planner that is based on [base_local_planner::TrajectoryPlannerROS](http://wiki.ros.org/base_local_planner#TrajectoryPlannerROS).
+
+### [directed_pose_follower](directed_pose_follower/README.md)
+
+Local planner that is based on [pose_follower::PoseFollower](http://wiki.ros.org/pose_follower).
+
 
 ## License
 

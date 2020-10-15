@@ -15,6 +15,7 @@
   <exec_depend>directed_msgs</exec_depend>
   <exec_depend>directed_planner</exec_depend>
   <exec_depend>trajectory_directed_local_planner</exec_depend>
+  <exec_depend>directed_pose_follower</exec_depend>
 
   <export>
     <metapackage/>

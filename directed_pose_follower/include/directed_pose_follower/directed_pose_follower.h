@@ -26,8 +26,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef TRAJECTORY_DIRECTED_LOCAL_PLANNER_TRAJECTORY_DIRECTED_LOCAL_PLANNER_H_
-#define TRAJECTORY_DIRECTED_LOCAL_PLANNER_TRAJECTORY_DIRECTED_LOCAL_PLANNER_H_
+#ifndef DIRECTED_POSE_FOLLOWER_DIRECTED_POSE_FOLLOWER_H_
+#define DIRECTED_POSE_FOLLOWER_DIRECTED_POSE_FOLLOWER_H_
 
 #include <boost/shared_ptr.hpp>
 #include <boost/thread.hpp>
@@ -44,6 +44,7 @@
 #include <nav_core/base_local_planner.h>
 #include <base_local_planner/latched_stop_rotate_controller.h>
 #include <base_local_planner/trajectory_planner_ros.h>
+#include <pose_follower/pose_follower.h>
 #include <base_local_planner/footprint_helper.h>
 
 #include <base_local_planner/odometry_helper_ros.h>
@@ -58,24 +59,24 @@
 #include <geometry_msgs/Point.h>
 
 
-namespace trajectory_directed_local_planner {
+namespace directed_pose_follower {
   /**
    * @class DWAPlannerROS
    * @brief ROS Wrapper for the DWAPlanner that adheres to the
    * BaseLocalPlanner interface and can be used as a plugin for move_base.
    */
-  class TrajectoryDirectedLocalPlanner : public base_local_planner::TrajectoryPlannerROS {
+  class DirectedPoseFollower : public pose_follower::PoseFollower {
 
     public:
       /**
        * Constructor
        */
-      TrajectoryDirectedLocalPlanner();
+      DirectedPoseFollower();
 
       /**
        * Deconstructor
        */
-      ~TrajectoryDirectedLocalPlanner();
+      ~DirectedPoseFollower();
 
       /**
        * Initializes directed local planner

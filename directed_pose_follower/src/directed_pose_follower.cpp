@@ -26,7 +26,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include <trajectory_directed_local_planner/trajectory_directed_local_planner.h>
+#include <directed_pose_follower/directed_pose_follower.h>
 #include <Eigen/Core>
 #include <cmath>
 
@@ -42,20 +42,20 @@
 #include <Eigen/Dense>
 
 //register this planner as a BaseLocalPlanner plugin
-PLUGINLIB_EXPORT_CLASS(trajectory_directed_local_planner::TrajectoryDirectedLocalPlanner, nav_core::BaseLocalPlanner)
+PLUGINLIB_EXPORT_CLASS(directed_pose_follower::DirectedPoseFollower, nav_core::BaseLocalPlanner)
 
-namespace trajectory_directed_local_planner {
+namespace directed_pose_follower {
 
-  TrajectoryDirectedLocalPlanner::TrajectoryDirectedLocalPlanner() : initialized_(false),
+  DirectedPoseFollower::DirectedPoseFollower() : initialized_(false),
     odom_helper_("odom"), setup_(false) {
 
     }
-  TrajectoryDirectedLocalPlanner::~TrajectoryDirectedLocalPlanner(){
+  DirectedPoseFollower::~DirectedPoseFollower(){
     //make sure to clean things up
     //delete dsrv_;
     }
 
-  void TrajectoryDirectedLocalPlanner::initialize(
+  void DirectedPoseFollower::initialize(
     std::string name,
     tf2_ros::Buffer* tf,
     costmap_2d::Costmap2DROS* costmap_ros) {
@@ -66,7 +66,7 @@ namespace trajectory_directed_local_planner {
         path_blocked = true;
 
 
-        TrajectoryPlannerROS::initialize(name, tf, costmap_ros);
+        PoseFollower::initialize(name, tf, costmap_ros);
 
         tf_ = tf;
 
@@ -127,7 +127,7 @@ namespace trajectory_directed_local_planner {
       }
     }
 
-  bool TrajectoryDirectedLocalPlanner::generateDirectionVectors(unsigned char * cost_directed_xu, unsigned char * cost_directed_xd,
+  bool DirectedPoseFollower::generateDirectionVectors(unsigned char * cost_directed_xu, unsigned char * cost_directed_xd,
                                 unsigned char * cost_directed_yu, unsigned char * cost_directed_yd,
                                 double * node_direction_vectors, unsigned int directed_size_x, unsigned int directed_size_y ) {
     unsigned int x0, xn, y0, yn;
@@ -178,20 +178,20 @@ namespace trajectory_directed_local_planner {
     return true;
   }
 
-  bool TrajectoryDirectedLocalPlanner::computeVelocityCommands(geometry_msgs::Twist& cmd_vel){
+  bool DirectedPoseFollower::computeVelocityCommands(geometry_msgs::Twist& cmd_vel){
     //if (right_of_way) DWAPlannerROS::computeVelocityCommands(cmd_vel);
     if (determineRightOfWay()) {
       no_priority_time_2 = ros::Time::now();
       wait_time = rand()%6 + 4;
-      return TrajectoryPlannerROS::computeVelocityCommands(cmd_vel);
+      return PoseFollower::computeVelocityCommands(cmd_vel);
     }
     else if ((ros::Time::now() - no_priority_time_2) >  ros::Duration(wait_time)) {
-      return TrajectoryPlannerROS::computeVelocityCommands(cmd_vel);
+      return PoseFollower::computeVelocityCommands(cmd_vel);
     }
     else return setStationaryVelocity(cmd_vel);
   }
 
-  bool TrajectoryDirectedLocalPlanner::setStationaryVelocity(geometry_msgs::Twist& cmd_vel){
+  bool DirectedPoseFollower::setStationaryVelocity(geometry_msgs::Twist& cmd_vel){
     //ROS_INFO("Seting 0 vel");
     cmd_vel.linear.x = 0.0;
     cmd_vel.linear.y = 0.0;
@@ -202,7 +202,7 @@ namespace trajectory_directed_local_planner {
     return true;
   }
 
-  bool TrajectoryDirectedLocalPlanner::determineRightOfWay(){
+  bool DirectedPoseFollower::determineRightOfWay(){
 
     if (! isInitialized()) {
      ROS_ERROR("This planner has not been initialized, please call initialize() before using this planner");
@@ -377,7 +377,7 @@ namespace trajectory_directed_local_planner {
       return right_of_way;
   }
 
-    bool TrajectoryDirectedLocalPlanner::checkOccupation(double wx, double wy, std::vector< geometry_msgs::Point > footprint) {
+    bool DirectedPoseFollower::checkOccupation(double wx, double wy, std::vector< geometry_msgs::Point > footprint) {
 
       Eigen::Vector3f position_of_cell(wx, wy, 0.0);
       std::vector <base_local_planner::Position2DInt > cells_to_check = footprint_helper_.getFootprintCells(position_of_cell, footprint, *costmap_, true);
@@ -395,7 +395,7 @@ namespace trajectory_directed_local_planner {
       return false;
     }
 
-    bool TrajectoryDirectedLocalPlanner::checkOccupation(unsigned int mx, unsigned int my)
+    bool DirectedPoseFollower::checkOccupation(unsigned int mx, unsigned int my)
     {
       double wx, wy;
       directed_layer_->directedMapToWorld(mx, my, wx, wy);
@@ -412,7 +412,7 @@ namespace trajectory_directed_local_planner {
       return false;
     }
 
-    bool TrajectoryDirectedLocalPlanner::checkIfBlocked(double wx, double wy, double current_goal_wx, double current_goal_wy, double current_position_wx, double current_position_wy){
+    bool DirectedPoseFollower::checkIfBlocked(double wx, double wy, double current_goal_wx, double current_goal_wy, double current_position_wx, double current_position_wy){
 
       geometry_msgs::Point p1_, p2_, p3_, p4_;
       p1_.x = 0.0;
@@ -460,21 +460,21 @@ namespace trajectory_directed_local_planner {
 
 
 
-    bool TrajectoryDirectedLocalPlanner::isGoalReached(){
-      return TrajectoryPlannerROS::isGoalReached();
+    bool DirectedPoseFollower::isGoalReached(){
+      return PoseFollower::isGoalReached();
     }
 
-    bool TrajectoryDirectedLocalPlanner::setPlan(const std::vector<geometry_msgs::PoseStamped>& orig_global_plan) {
+    bool DirectedPoseFollower::setPlan(const std::vector<geometry_msgs::PoseStamped>& orig_global_plan) {
       if (! isInitialized()) {
         ROS_ERROR("This planner has not been initialized, please call initialize() before using this planner");
         return false;
       }
      global_plan_.clear();
      global_plan_ = orig_global_plan;
-     return TrajectoryPlannerROS::setPlan(orig_global_plan);
+     return PoseFollower::setPlan(orig_global_plan);
     }
 
-    double TrajectoryDirectedLocalPlanner::getPriorityVal(unsigned int start_mx, unsigned int start_my,
+    double DirectedPoseFollower::getPriorityVal(unsigned int start_mx, unsigned int start_my,
                                                           unsigned int goal_mx, unsigned int goal_my)
     {
       double start_wx, start_wy, goal_wx, goal_wy;
@@ -491,4 +491,4 @@ namespace trajectory_directed_local_planner {
     }
 
 
-}; // namespace trajectory_directed_local_planner
+}; // namespace directed_pose_follower

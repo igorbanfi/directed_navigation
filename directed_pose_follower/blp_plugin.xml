@@ -1,0 +1,7 @@
+<library path="lib/libdirected_pose_follower">
+  <class name="directed_pose_follower/DirectedPoseFollower" type="directed_pose_follower::DirectedPoseFollower" base_class_type="nav_core::BaseLocalPlanner">
+    <description>
+  Local planner that takes directed map into consideration.
+    </description>
+  </class>
+</library>
